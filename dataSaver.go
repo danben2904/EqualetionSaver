@@ -3,7 +3,8 @@ package main
 import (
 	"fmt"
 	"html/template"
-	"math/rand"
+	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -20,7 +21,19 @@ type Request struct {
 func requestToServer(reqq Request, wg *sync.WaitGroup) {
 	defer wg.Done()
 	resp, err := http.PostForm("http://172.20.10.3:8080", url.Values{"a": {strconv.Itoa(reqq.a)}, "b": {strconv.Itoa(reqq.b)}, "c": {strconv.Itoa(reqq.c)}, "id": {strconv.Itoa(reqq.id)}})
-	fmt.Print(resp, err)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusOK {
+		bodyBytes, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		bodyString := string(bodyBytes)
+		fmt.Println(bodyString)
+	}
 }
 func runServer(addr string) {
 	tmpl := template.Must(template.ParseFiles("index.html"))
@@ -39,9 +52,7 @@ func runServer(addr string) {
 				wg.Add(1)
 				reqq := Request{a: a, b: b, c: c}
 				_ = reqq
-				fmt.Println(a, b, c)
-				fmt.Print(rand.Intn(100))
-				go requestToServer(reqq, wg)
+				go requestToServer(reqq, &wg)
 			}
 			wg.Wait()
 		})
