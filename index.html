@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {{if .Success}}
+        <h1>Thanks for your message!</h1>
+    {{else}}
+        <h1>Уравнение</h1>
+        <form method="POST">
+            <label>A</label><br />
+            <input type="text" name="email"><br />
+            <label>B</label><br />
+            <input type="text" name="subject"><br />
+            <label>C</label><br />
+            <textarea name="message"></textarea><br />
+            <input type="submit">
+        </form>
+    {{end}}
+</body>
+</html>
