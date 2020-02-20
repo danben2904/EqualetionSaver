@@ -2,29 +2,31 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
 	"net/http"
-	"strings"
+	"net/url"
 )
 
-func count(reqq string) {
+func count(reqq string) string {
 	resp, err := http.PostForm("http://172.20.10.6:8080/count", url.Values{"abc" : {reqq}})
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-
+	resp.Body.Close()
+	bodyString := ""
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatal(err)
 		}
-		bodyString := string(bodyBytes)
+		bodyString = string(bodyBytes)
 	}
 	return bodyString
 }
 
+
 func makeData(reqq string, s string) {
-	defer wg.Done()
 	resp, err := http.PostForm("http://172.20.10.6:8080/make", url.Values{"abc": {reqq}, "ans": {s}})
 	if err != nil {
 		log.Fatal(err)
@@ -38,14 +40,14 @@ func askData(reqq string) string{
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-
+	resp.Body.Close()
+  bodyString := ""
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			log.Fatal(err)
 		}
-		bodyString := string(bodyBytes)
+		bodyString = string(bodyBytes)
 	}
 	return bodyString
 }
@@ -61,8 +63,8 @@ func runServer(addr string) {
 			reqq := a + " " + b + " " + c
 			s := askData(reqq)
 			if s == "false" {
-				s = count(reqq)
-				makeData(reqq, s)
+				new_s := count(reqq)
+				makeData(reqq, new_s)
 			}
 			fmt.Fprintln(w, s)
 			})
