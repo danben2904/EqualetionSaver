@@ -1,23 +1,52 @@
-<!DOCTYPE html>
-<html lang="en">
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Map</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 </head>
-<body>
-    {{if .Success}}
+<!-- END: Head-->
+<!-- BEGIN: Body-->
 
-    {{else}}
-        <h1>Уравнение</h1>
-        <form method="POST">
-            <label>A</label><br />
-            <input type="text" name="a"><br />
-            <label>B</label><br />
-            <input type="text" name="b"><br />
-            <label>C</label><br />
-            <textarea name="c"></textarea><br />
-            <input type="submit">
-        </form>
-    {{end}}
+<body>
+<div class="container h-100">
+    <div class="row align-items-center align-self-center h-100 " style="min-width: 100%;margin: 0;position: absolute;top: 50%; left: 50%; -ms-transform: translate(-50%, -50%); transform: translate(-50%, -50%);">
+        <div class="col-6 mx-auto">
+            <div class="jumbotron">
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Решатель уравнений</h3>
+                    </div>
+                    <div class="panel-body">
+                        <form method="post">
+                            <fieldset>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="" name="a" type="text" autofocus="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="" name="b" type="text" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-control" placeholder="" name="c" type="text" value="">
+                                </div>
+                                <!-- Change this to a button or input when using this as a form -->
+                                <button type="submit" class="btn btn-sm btn-success">Решить</button>
+
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
+<!-- END: Body-->
+
 </html>
