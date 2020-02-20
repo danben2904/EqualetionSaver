@@ -6,16 +6,16 @@
 </head>
 <body>
     {{if .Success}}
-        <h1>Thanks for your message!</h1>
+
     {{else}}
         <h1>Уравнение</h1>
         <form method="POST">
             <label>A</label><br />
-            <input type="text" name="email"><br />
+            <input type="text" name="a"><br />
             <label>B</label><br />
-            <input type="text" name="subject"><br />
+            <input type="text" name="b"><br />
             <label>C</label><br />
-            <textarea name="message"></textarea><br />
+            <textarea name="c"></textarea><br />
             <input type="submit">
         </form>
     {{end}}
