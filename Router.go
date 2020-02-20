@@ -6,14 +6,17 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
+	"sync"
 )
 
-func count(reqq string) string {
-	resp, err := http.PostForm("http://172.20.10.6:8080/count", url.Values{"abc" : {reqq}})
+func count(reqq string, wg *sync.WaitGroup) string {
+	defer wg.Done()
+	resp, err := http.PostForm("http://127.0.0.1:5000", url.Values{"abc" : {reqq}})
 	if err != nil {
 		log.Fatal(err)
 	}
-	resp.Body.Close()
+	defer resp.Body.Close()
 	bodyString := ""
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
@@ -22,26 +25,28 @@ func count(reqq string) string {
 		}
 		bodyString = string(bodyBytes)
 	}
+	fmt.Println(bodyString)
 	return bodyString
 }
 
 
-func makeData(reqq string, s string) {
-	resp, err := http.PostForm("http://172.20.10.6:8080/make", url.Values{"abc": {reqq}, "ans": {s}})
+func makeData(reqq string, s string, wg *sync.WaitGroup) {
+	defer wg.Done()
+	resp, err := http.PostForm("http://127.0.0.1:5050/make", url.Values{"abc": {reqq}, "ans": {s}})
 	if err != nil {
 		log.Fatal(err)
 	}
-	resp.Body.Close()
-
+	defer resp.Body.Close()
 }
 
-func askData(reqq string) string{
-	resp, err := http.PostForm("http://172.20.10.3:8080/ask", url.Values{"abc" : {reqq}})
+func askData(reqq string, wg *sync.WaitGroup) string{
+	defer wg.Done()
+	resp, err := http.PostForm("http://127.0.0.1:5050/ask", url.Values{"abc" : {reqq}})
 	if err != nil {
 		log.Fatal(err)
 	}
-	resp.Body.Close()
-  bodyString := ""
+	defer resp.Body.Close()
+  	bodyString := ""
 	if resp.StatusCode == http.StatusOK {
 		bodyBytes, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
@@ -53,20 +58,29 @@ func askData(reqq string) string{
 }
 
 
-func runServer(addr string) {
+func runServerRouter(addr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/",
 		func(w http.ResponseWriter, r *http.Request){
+			var wg sync.WaitGroup
+			wg.Add(1)
 			a := r.FormValue("a")
 			b := r.FormValue("b")
 			c := r.FormValue("c")
 			reqq := a + " " + b + " " + c
-			s := askData(reqq)
-			if s == "false" {
-				new_s := count(reqq)
-				makeData(reqq, new_s)
+			s := askData(reqq, &wg)
+			wg.Wait()
+			if strings.TrimSpace(s) == "false" {
+				wg.Add(1)
+				new_s := count(reqq, &wg)
+				fmt.Fprintln(w, new_s)
+				wg.Wait()
+				wg.Add(1)
+				makeData(reqq, new_s, &wg)
+				wg.Wait()
+			} else {
+				fmt.Fprintln(w, s)
 			}
-			fmt.Fprintln(w, s)
 			})
 
 	server := http.Server{
@@ -77,5 +91,5 @@ func runServer(addr string) {
 }
 
 func main() {
-	runServer(":8080")
+	runServerRouter(":8081")
 }

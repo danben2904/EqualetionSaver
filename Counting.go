@@ -8,15 +8,14 @@ import (
 	"strings"
 )
 
-
-type Request struct {
-	a  int
-	b  int
-	c  int
+type Req struct {
+	a int
+	b int
+	c int
 }
 
 
-func runServer(addr string) {
+func runServerCount(addr string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/",
 		func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +25,7 @@ func runServer(addr string) {
 			c, errc := strconv.Atoi(strings.Split(abc, " ")[2])
 			var res string
 			if erra == nil && errb == nil && errc == nil {
-				reqq := Request{a: a, b: b, c: c}
+				reqq := Req{a: a, b: b, c: c}
 				_ = reqq
 				x1, x2, Flag := sq_ur(float64(a), float64(b), float64(c))
 				if Flag == false {
@@ -47,7 +46,7 @@ func runServer(addr string) {
 
 
 func main() {
-	runServer(":8083")
+	runServerCount(":5000")
 }
 
 
