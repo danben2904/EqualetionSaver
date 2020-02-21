@@ -7,7 +7,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Request struct {
+type RequestABC struct {
 	abc string
 	ans string
 }
@@ -23,7 +23,7 @@ func runServer(addr string) {
 		func(w http.ResponseWriter, r *http.Request) {
 			abc := r.FormValue("abc")
 			row := db.QueryRow("select * from counted where abc = $1", abc)
-			res := Request{}
+			res := RequestABC{}
 			err := row.Scan(&res.abc, &res.ans)
 			if err != nil {
 			    fmt.Fprintln(w, "false")
@@ -36,7 +36,7 @@ func runServer(addr string) {
 			abc := r.FormValue("abc")
 			ans := r.FormValue("ans")
 			row := db.QueryRow("select * from counted where abc = $1", abc)
-			res := Request{}
+			res := RequestABC{}
 			err := row.Scan(&res.abc, &res.ans)
 			if err == nil {
 			    return
@@ -56,5 +56,5 @@ func runServer(addr string) {
 }
 
 func main() {
-	runServer(":8082")
+	runServer(":5050")
 }

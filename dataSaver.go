@@ -15,12 +15,11 @@ type Request struct {
 	a  int
 	b  int
 	c  int
-	id int
 }
 
-func requestToServer(reqq Request, wg *sync.WaitGroup) {
+func requestToServer(reqq Request, wg *sync.WaitGroup, w http.ResponseWriter) {
 	defer wg.Done()
-	resp, err := http.PostForm("http://172.20.10.3:8080", url.Values{"a": {strconv.Itoa(reqq.a)}, "b": {strconv.Itoa(reqq.b)}, "c": {strconv.Itoa(reqq.c)}, "id": {strconv.Itoa(reqq.id)}})
+	resp, err := http.PostForm("http://127.0.0.1:8081", url.Values{"a": {strconv.Itoa(reqq.a)}, "b": {strconv.Itoa(reqq.b)}, "c": {strconv.Itoa(reqq.c)}})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,10 +31,10 @@ func requestToServer(reqq Request, wg *sync.WaitGroup) {
 			log.Fatal(err)
 		}
 		bodyString := string(bodyBytes)
-		fmt.Println(bodyString)
+		fmt.Fprint(w, bodyString)
 	}
 }
-func runServer(addr string) {
+func runServerHead(addr string) {
 	tmpl := template.Must(template.ParseFiles("index.html"))
 	mux := http.NewServeMux()
 	mux.HandleFunc("/",
@@ -52,7 +51,7 @@ func runServer(addr string) {
 				wg.Add(1)
 				reqq := Request{a: a, b: b, c: c}
 				_ = reqq
-				go requestToServer(reqq, &wg)
+				go requestToServer(reqq, &wg, w)
 			}
 			wg.Wait()
 		})
@@ -67,5 +66,5 @@ func runServer(addr string) {
 }
 
 func main() {
-	runServer(":8081")
+	runServerHead(":8080")
 }
